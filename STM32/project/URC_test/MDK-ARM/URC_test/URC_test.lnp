@@ -1,0 +1,23 @@
+--cpu Cortex-M3
+"urc_test\startup_stm32f103xb.o"
+"urc_test\system_stm32f1xx.o"
+"urc_test\stm32f1xx_it.o"
+"urc_test\stm32f1xx_hal_msp.o"
+"urc_test\main.o"
+"urc_test\stm32f1xx_hal_tim.o"
+"urc_test\stm32f1xx_hal_cortex.o"
+"urc_test\stm32f1xx_hal_pwr.o"
+"urc_test\stm32f1xx_hal.o"
+"urc_test\stm32f1xx_hal_tim_ex.o"
+"urc_test\stm32f1xx_hal_dma.o"
+"urc_test\stm32f1xx_hal_gpio.o"
+"urc_test\stm32f1xx_hal_flash_ex.o"
+"urc_test\stm32f1xx_hal_rcc.o"
+"urc_test\stm32f1xx_hal_flash.o"
+"urc_test\stm32f1xx_hal_gpio_ex.o"
+"urc_test\stm32f1xx_hal_rcc_ex.o"
+"urc_test\mpu6050.o"
+--library_type=microlib --strict --scatter "URC_test\URC_test.sct"
+--diag_suppress=L6329 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "URC_test.map" -o URC_test\URC_test.axf

@@ -59,8 +59,6 @@ void Error_Handler(void);
 
 int main(void)
 {
-	//newline
-	
 
   /* USER CODE BEGIN 1 */
 
