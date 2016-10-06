@@ -10,12 +10,24 @@
 extern "C" {
 #endif
 	
+#define IMU_SLAVE_ADD 0xD0
+
+	
+
+#define IMU_GYRO_CONFIG 0x1B
+#define IMU_ACCEL_CONFIG 0x1C
+#define IMU_ACCEL_XOUT_H 0x3B
+#define IMU_WHO_AM_I 0x75
+	
+#define IMU_MASK_GYRO_CONFIG_RATE 3
+#define IMU_MASK_ACCEL_CONFIG_RATE 3
+	
 typedef enum{
 	IMU_STATE_
 }imu_state_t;
 	
 typedef enum{
-	IMU_ERROR_COM,
+	IMU_ERROR_COMM, //Sensor not responding
 	IMU_ERROR_SUCCES
 }imu_error_t;
 
@@ -33,9 +45,9 @@ typedef enum{
 	IMU_ACC_RANGE_16	//+- 16G
 }imu_acc_range_t;
 
+imu_error_t imu_begin(I2C_HandleTypeDef *imu_i2c, imu_gyro_range_t gyro_range, imu_acc_range_t acc_range);
+imu_error_t imu_start_reading(void);
 
-imu_error_t imu_self_test(void);
-imu_error_t imu_begin();
 	
 #ifdef __cplusplus
 }
