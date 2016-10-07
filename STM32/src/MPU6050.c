@@ -2,6 +2,7 @@
 #include "stm32f1xx_hal.h"
 #include <MPU6050.h>
 
+//Interrupt activity status
 #define THERE_IS_NO_ACTIVE_READING 0x00u
 #define THERE_IS_ACTIVE_READING 0x01u
 
@@ -12,16 +13,19 @@ typedef struct
 	uint8_t active_reading;
 }imu_it_handler_t;
 
+//public variables
 I2C_HandleTypeDef *imu_i2c_p;
 imu_data_t *data_buffer;
 uint8_t imu_sensor_values[14];
 imu_it_handler_t imu_it_handler;
 
+//static function prototypes
 static uint8_t read_register(uint8_t addr);
 static void write_register(uint8_t addr, uint8_t data);
 static imu_error_t read_register_it(uint8_t addr, uint8_t *data);
 static void calculate_data(void);
 
+//static functions
 static uint8_t read_register(uint8_t addr)
 {
 	uint8_t regval;
@@ -40,6 +44,7 @@ static imu_error_t read_register_it(uint8_t addr, uint8_t *data)
 	return IMU_ERROR_SUCCES;
 }	
 
+//SENSOR DATA
 imu_error_t imu_read_data(void)
 {
 	imu_it_handler.data_counter = 0;
@@ -77,10 +82,11 @@ void imu_rx_cplt_callback(void)
 		}	
 	}	
 }
+//END OF SENSOR DATA
 
 
 
-
+//INIT
 imu_error_t imu_begin(I2C_HandleTypeDef *imu_i2c, imu_gyro_range_t gyro_range, imu_acc_range_t acc_range)
 {
 	imu_i2c_p = imu_i2c;
@@ -107,6 +113,7 @@ imu_error_t imu_begin(I2C_HandleTypeDef *imu_i2c, imu_gyro_range_t gyro_range, i
 	
 	return IMU_ERROR_SUCCES;
 }
+//END OF INIT
 
 
 
