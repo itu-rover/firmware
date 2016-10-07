@@ -43,6 +43,7 @@ I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+imu_data_t data_pack;
 
 /* USER CODE END PV */
 
@@ -65,7 +66,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	imu_error_t imu_stat;
 
   /* USER CODE END 1 */
 
@@ -82,6 +82,7 @@ int main(void)
   MX_I2C1_Init();
 
   /* USER CODE BEGIN 2 */
+	imu_begin(&hi2c1, IMU_GYRO_RANGE_250, IMU_ACC_RANGE_2);
 
   /* USER CODE END 2 */
 
@@ -92,8 +93,8 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-		imu_stat = imu_begin(&hi2c1, IMU_GYRO_RANGE_250, IMU_ACC_RANGE_2);
-			imu_start_reading();
+		imu_read_data(&data_pack);
+		HAL_Delay(100);
 
   }
   /* USER CODE END 3 */
@@ -141,8 +142,8 @@ static void MX_I2C1_Init(void)
 {
 
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 300000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
+  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -156,12 +157,18 @@ static void MX_I2C1_Init(void)
 
 }
 
-/** Pinout Configuration
+/** Configure pins as 
+        * Analog 
+        * Input 
+        * Output
+        * EVENT_OUT
+        * EXTI
 */
 static void MX_GPIO_Init(void)
 {
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
 }
