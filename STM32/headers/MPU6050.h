@@ -53,8 +53,15 @@ typedef enum{
 	IMU_ACC_RANGE_16	//+- 16G
 }imu_acc_range_t;
 
+
+
+//call this function in HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
+void imu_rx_cplt_callback(void);
 imu_error_t imu_begin(I2C_HandleTypeDef *imu_i2c, imu_gyro_range_t gyro_range, imu_acc_range_t acc_range);
-imu_error_t imu_read_data(imu_data_t *data);
+imu_error_t imu_read_data(void);
+
+void imu_data_ready_callback(imu_data_t *data);
+
 
 	
 #ifdef __cplusplus

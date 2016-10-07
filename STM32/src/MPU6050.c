@@ -1,17 +1,26 @@
+#include <stdint.h>
 #include "stm32f1xx_hal.h"
 #include <MPU6050.h>
 
+#define THERE_IS_NO_ACTIVE_READING 0x00u
+#define THERE_IS_ACTIVE_READING 0x01u
+
+typedef struct
+{
+	uint8_t data_counter;
+	uint8_t data_size;
+	uint8_t active_reading;
+}imu_it_handler_t;
+
 I2C_HandleTypeDef *imu_i2c_p;
 imu_data_t *data_buffer;
-uint8_t data_counter;
-uint8_t data_size;
 uint8_t imu_sensor_values[14];
+imu_it_handler_t imu_it_handler;
 
 static uint8_t read_register(uint8_t addr);
 static void write_register(uint8_t addr, uint8_t data);
 static imu_error_t read_register_it(uint8_t addr, uint8_t *data);
 static void calculate_data(void);
-
 
 static uint8_t read_register(uint8_t addr)
 {
@@ -31,7 +40,15 @@ static imu_error_t read_register_it(uint8_t addr, uint8_t *data)
 	return IMU_ERROR_SUCCES;
 }	
 
-static void calculate_data()
+imu_error_t imu_read_data(void)
+{
+	imu_it_handler.data_counter = 0;
+	imu_it_handler.data_size = IMU_DATA_REGISTER_COUNTER;
+	imu_it_handler.active_reading = THERE_IS_ACTIVE_READING;
+	HAL_I2C_MemRxCpltCallback(imu_i2c_p);
+}
+
+static void calculate_data(void)
 {
 	data_buffer->imu_data_accX = (imu_sensor_values[0] << 8u) | imu_sensor_values[1];
 	data_buffer->imu_data_accY = (imu_sensor_values[2] << 8u) | imu_sensor_values[3];
@@ -40,11 +57,26 @@ static void calculate_data()
 	data_buffer->imu_data_gyroY = (imu_sensor_values[10] << 8u) | imu_sensor_values[11];
 	data_buffer->imu_data_gyroZ = (imu_sensor_values[12] << 8u) | imu_sensor_values[13];
 	data_buffer->imu_data_temp = (imu_sensor_values[6] << 8u) | imu_sensor_values[7];
+	
+	imu_data_ready_callback(data_buffer);
 }
 
-
-
-
+void imu_rx_cplt_callback(void)
+{
+	if(imu_it_handler.active_reading == THERE_IS_ACTIVE_READING)
+	{
+		if(imu_it_handler.data_counter < imu_it_handler.data_size)
+		{
+			read_register_it(IMU_ACCEL_XOUT_H + imu_it_handler.data_counter, &imu_sensor_values[imu_it_handler.data_counter]);
+			imu_it_handler.data_counter++;
+		}
+		else
+		{
+			imu_it_handler.active_reading = THERE_IS_NO_ACTIVE_READING;
+			calculate_data();
+		}	
+	}	
+}
 
 
 
@@ -75,26 +107,7 @@ imu_error_t imu_begin(I2C_HandleTypeDef *imu_i2c, imu_gyro_range_t gyro_range, i
 	
 	return IMU_ERROR_SUCCES;
 }
-	
 
 
-imu_error_t imu_read_data(imu_data_t *data)
-{
-	data_buffer = data;
-	data_counter = 0;
-	data_size = 14;
-	HAL_I2C_MemRxCpltCallback(imu_i2c_p);
-}
 
-void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
-{
-	if(data_counter < data_size)
-	{
-		read_register_it(IMU_ACCEL_XOUT_H + data_counter, &imu_sensor_values[data_counter]);
-		data_counter++;
-	}
-	else
-	{
-		calculate_data();
-	}
-}
+

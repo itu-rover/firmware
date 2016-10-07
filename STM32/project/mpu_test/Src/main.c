@@ -43,7 +43,7 @@ I2C_HandleTypeDef hi2c1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-imu_data_t data_pack;
+imu_data_t *data_pack;
 
 /* USER CODE END PV */
 
@@ -93,7 +93,7 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-		imu_read_data(&data_pack);
+		imu_read_data();
 		HAL_Delay(100);
 
   }
@@ -174,6 +174,17 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+	imu_rx_cplt_callback();
+}
+
+void imu_data_ready_callback(imu_data_t *data)
+{
+	int16_t acc_x;
+	data_pack = data;
+	acc_x = data_pack->imu_data_accX;
+}
 
 /* USER CODE END 4 */
 
