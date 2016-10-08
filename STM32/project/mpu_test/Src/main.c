@@ -34,6 +34,7 @@
 #include "stm32f1xx_hal.h"
 
 /* USER CODE BEGIN Includes */
+#include <tcp_com.h>
 #include <MPU6050.h>
 
 /* USER CODE END Includes */
@@ -45,7 +46,7 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-imu_data_t *data_pack;
+imu_data_t data_pack;
 
 /* USER CODE END PV */
 
@@ -86,6 +87,7 @@ int main(void)
   MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
+	tcp_begin(&huart1, &data_pack);
 	imu_begin(&hi2c1, IMU_GYRO_RANGE_250, IMU_ACC_RANGE_2);
 
   /* USER CODE END 2 */
@@ -209,16 +211,19 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	tcp_rx_data_callback();
+}
+
 void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 	imu_rx_cplt_callback();
 }
 
-void imu_data_ready_callback(imu_data_t *data)
+void imu_data_ready_callback(imu_data_t data)
 {
-	int16_t acc_x;
 	data_pack = data;
-	acc_x = data_pack->imu_data_accX;
 }
 
 /* USER CODE END 4 */

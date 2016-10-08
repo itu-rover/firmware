@@ -545,3 +545,9 @@ STM32/conf/CONFIG.h~RF608fe8.TMP
 STM32/headers/MPU6050.h~RF3b7437.TMP
 STM32/headers/MPU6050.h~RF4be9f5.TMP
 STM32/headers/MPU6050.h~RF69f82c.TMP
+STM32/project/mpu_test/MDK-ARM/mpu_test/stm32f1xx_hal_uart.crf
+STM32/project/mpu_test/MDK-ARM/mpu_test/stm32f1xx_hal_uart.d
+STM32/project/mpu_test/MDK-ARM/mpu_test/stm32f1xx_hal_uart.o
+STM32/project/mpu_test/MDK-ARM/mpu_test/tcp_com.crf
+STM32/project/mpu_test/MDK-ARM/mpu_test/tcp_com.d
+STM32/project/mpu_test/MDK-ARM/mpu_test/tcp_com.o
