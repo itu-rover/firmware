@@ -2,7 +2,7 @@
 
 #define IT_TRIGER_DELAY_UUS 10
 
-#define IT_PIN 13
+#define IT_PIN 2
 
 void triger_it(int it_pin);
 
