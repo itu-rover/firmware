@@ -9,3 +9,7 @@
 	#define IMU_DATA_REGISTER_COUNTER 14
 #endif
 
+#define CONF_TCP (1u)
+#ifdef CONF_TCP
+#endif
+
