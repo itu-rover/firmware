@@ -15,7 +15,7 @@ typedef struct
 
 //public variables
 I2C_HandleTypeDef *imu_i2c_p;
-imu_data_t *data_buffer;
+imu_data_t data_buffer;
 uint8_t imu_sensor_values[14];
 imu_it_handler_t imu_it_handler;
 
@@ -51,17 +51,18 @@ imu_error_t imu_read_data(void)
 	imu_it_handler.data_size = IMU_DATA_REGISTER_COUNTER;
 	imu_it_handler.active_reading = THERE_IS_ACTIVE_READING;
 	HAL_I2C_MemRxCpltCallback(imu_i2c_p);
+	return IMU_ERROR_SUCCES;
 }
 
 static void calculate_data(void)
 {
-	data_buffer->imu_data_accX = (imu_sensor_values[0] << 8u) | imu_sensor_values[1];
-	data_buffer->imu_data_accY = (imu_sensor_values[2] << 8u) | imu_sensor_values[3];
-	data_buffer->imu_data_accZ = (imu_sensor_values[4] << 8u) | imu_sensor_values[5];
-	data_buffer->imu_data_gyroX = (imu_sensor_values[8] << 8u) | imu_sensor_values[9];
-	data_buffer->imu_data_gyroY = (imu_sensor_values[10] << 8u) | imu_sensor_values[11];
-	data_buffer->imu_data_gyroZ = (imu_sensor_values[12] << 8u) | imu_sensor_values[13];
-	data_buffer->imu_data_temp = (imu_sensor_values[6] << 8u) | imu_sensor_values[7];
+	data_buffer.imu_data_accX = (imu_sensor_values[0] << 8u) | imu_sensor_values[1];
+	data_buffer.imu_data_accY = (imu_sensor_values[2] << 8u) | imu_sensor_values[3];
+	data_buffer.imu_data_accZ = (imu_sensor_values[4] << 8u) | imu_sensor_values[5];
+	data_buffer.imu_data_gyroX = (imu_sensor_values[8] << 8u) | imu_sensor_values[9];
+	data_buffer.imu_data_gyroY = (imu_sensor_values[10] << 8u) | imu_sensor_values[11];
+	data_buffer.imu_data_gyroZ = (imu_sensor_values[12] << 8u) | imu_sensor_values[13];
+	data_buffer.imu_data_temp = (imu_sensor_values[6] << 8u) | imu_sensor_values[7];
 	
 	imu_data_ready_callback(data_buffer);
 }

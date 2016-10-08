@@ -75,7 +75,7 @@ imu_error_t imu_begin(I2C_HandleTypeDef *imu_i2c, imu_gyro_range_t gyro_range, i
 imu_error_t imu_read_data(void);
 
 //callback function that indicates end of receiving  
-void imu_data_ready_callback(imu_data_t *data);
+void imu_data_ready_callback(imu_data_t data);
 
 #ifdef __cplusplus
 }
