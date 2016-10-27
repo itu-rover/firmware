@@ -32,6 +32,7 @@ void loop() {
       if (Serial.available())
       {
         client.write(Serial.read());
+        Serial.print("data");
       }
     }
     delay(10);
@@ -41,6 +42,7 @@ void loop() {
 
 void triger_it(int it_pin)
 {
+  Serial.println("int");
   digitalWrite(it_pin, HIGH);
   delayMicroseconds(IT_TRIGER_DELAY_UUS);
   digitalWrite(it_pin, LOW);

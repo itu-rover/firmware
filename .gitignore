@@ -551,3 +551,7 @@ STM32/project/mpu_test/MDK-ARM/mpu_test/stm32f1xx_hal_uart.o
 STM32/project/mpu_test/MDK-ARM/mpu_test/tcp_com.crf
 STM32/project/mpu_test/MDK-ARM/mpu_test/tcp_com.d
 STM32/project/mpu_test/MDK-ARM/mpu_test/tcp_com.o
+STM32/headers/tcp_com.h~RF4bfb6a.TMP
+STM32/project/mpu_test/MDK-ARM/mpu_test/tiny_ekf.crf
+STM32/project/mpu_test/MDK-ARM/mpu_test/tiny_ekf.d
+STM32/project/mpu_test/MDK-ARM/mpu_test/tiny_ekf.o
