@@ -30,13 +30,13 @@ extern "C" {
 
 //IMU data structure includes sensor values	
 typedef struct{
-	int16_t imu_data_accX;
-	int16_t imu_data_accY;
-	int16_t imu_data_accZ;
-	int16_t imu_data_gyroX;
-	int16_t imu_data_gyroY;
-	int16_t imu_data_gyroZ;
-	int16_t imu_data_temp;	
+	double imu_data_accX;
+	double imu_data_accY;
+	double imu_data_accZ;
+	double imu_data_gyroX;
+	double imu_data_gyroY;
+	double imu_data_gyroZ;
+	double imu_data_temp;	
 }imu_data_t;
 	
 //IMU system status
