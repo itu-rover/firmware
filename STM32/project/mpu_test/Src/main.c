@@ -36,6 +36,7 @@
 /* USER CODE BEGIN Includes */
 #include <tcp_com.h>
 #include <MPU6050.h>
+#include <tiny_ekf.h>
 
 /* USER CODE END Includes */
 

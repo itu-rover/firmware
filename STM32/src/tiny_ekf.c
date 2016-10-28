@@ -203,7 +203,7 @@ static void mat_addeye(double * a, int n)
 
 /* TinyEKF code ------------------------------------------------------------------- */
 
-#include "tiny_ekf.h"
+#include <tiny_ekf.h>
 
 typedef struct {
 
