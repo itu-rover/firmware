@@ -34,9 +34,11 @@
 #include "stm32f1xx_hal.h"
 
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
 #include <tcp_com.h>
 #include <MPU6050.h>
 #include <tiny_ekf.h>
+#include <rover_gps.h>
 
 /* USER CODE END Includes */
 
@@ -47,8 +49,8 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+imu_data_raw_t data_pack_raw;
 imu_data_t data_pack;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -67,10 +69,10 @@ static void MX_USART1_UART_Init(void);
 
 /* USER CODE END 0 */
 
-int main(void)
-{
+int main(void){
 
   /* USER CODE BEGIN 1 */
+	char data_str[10];
 
   /* USER CODE END 1 */
 
@@ -88,8 +90,8 @@ int main(void)
   MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
-	tcp_begin(&huart1, &data_pack);
-	imu_begin(&hi2c1, IMU_GYRO_RANGE_250, IMU_ACC_RANGE_2);
+	tcp_begin(&huart1, &data_pack_raw);
+	imu_begin(&hi2c1, 10000u, IMU_GYRO_RANGE_250, IMU_ACC_RANGE_2);
 
   /* USER CODE END 2 */
 
@@ -100,8 +102,11 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+		
 		imu_read_data();
-		HAL_Delay(2000);
+		sprintf(data_str, "%3.2f \n", data_pack_raw.imu_data_accY);
+		HAL_UART_Transmit(&huart1, data_str, strlen(data_str), 10);
+		HAL_Delay(100);
 
   }
   /* USER CODE END 3 */
@@ -206,8 +211,9 @@ void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 	imu_rx_cplt_callback();
 }
 
-void imu_data_ready_callback(imu_data_t data)
+void imu_data_ready_callback(imu_data_raw_t data_raw, imu_data_t data)
 {
+	data_pack_raw = data_raw;
 	data_pack = data;
 }
 

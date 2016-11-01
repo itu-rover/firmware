@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <math.h>
 #include "stm32f1xx_hal.h"
 #include <MPU6050.h>
 
@@ -15,9 +16,11 @@ typedef struct
 
 //public variables
 I2C_HandleTypeDef *imu_i2c_p;
+imu_data_raw_t data_buffer_raw;
 imu_data_t data_buffer;
 int8_t imu_sensor_values[14];
 imu_it_handler_t imu_it_handler;
+uint32_t g_imu_rate_us;
 
 //static function prototypes
 static uint8_t read_register(uint8_t addr);
@@ -56,15 +59,23 @@ imu_error_t imu_read_data(void)
 
 static void calculate_data(void)
 {
-	data_buffer.imu_data_accX = ((double)((imu_sensor_values[0] << 8u) | imu_sensor_values[1]) / 16384);
-	data_buffer.imu_data_accY = ((double)((imu_sensor_values[2] << 8u) | imu_sensor_values[3]) / 16384);
-	data_buffer.imu_data_accZ = ((double)((imu_sensor_values[4] << 8u) | imu_sensor_values[5]) / 16384);
-	data_buffer.imu_data_gyroX = ((double)((imu_sensor_values[8] << 8u) | imu_sensor_values[9]) * 250 / 32768);
-	data_buffer.imu_data_gyroY = ((double)((imu_sensor_values[10] << 8u) | imu_sensor_values[11]) * 250 / 32768);
-	data_buffer.imu_data_gyroZ = ((double)((imu_sensor_values[12] << 8u) | imu_sensor_values[13]) * 250 / 32768);
-	data_buffer.imu_data_temp = (imu_sensor_values[6] << 8u) | imu_sensor_values[7];
+	data_buffer_raw.imu_data_accX = ((double)((imu_sensor_values[0] << 8u) | imu_sensor_values[1]) / 16384);
+	data_buffer_raw.imu_data_accY = ((double)((imu_sensor_values[2] << 8u) | imu_sensor_values[3]) / 16384);
+	data_buffer_raw.imu_data_accZ = ((double)((imu_sensor_values[4] << 8u) | imu_sensor_values[5]) / 16384);
+	data_buffer_raw.imu_data_gyroX = ((double)((imu_sensor_values[8] << 8u) | imu_sensor_values[9]) * 250 / 32768);
+	data_buffer_raw.imu_data_gyroY = ((double)((imu_sensor_values[10] << 8u) | imu_sensor_values[11]) * 250 / 32768);
+	data_buffer_raw.imu_data_gyroZ = ((double)((imu_sensor_values[12] << 8u) | imu_sensor_values[13]) * 250 / 32768);
+	data_buffer_raw.imu_data_temp = (imu_sensor_values[6] << 8u) | imu_sensor_values[7];
 	
-	imu_data_ready_callback(data_buffer);
+	data_buffer.imu_data_Gpitch  += (data_buffer_raw.imu_data_gyroX - GYROX_BIAS) * ((double)g_imu_rate_us / (1000000u));
+	data_buffer.imu_data_Gyaw += (data_buffer_raw.imu_data_gyroY - GYROY_BIAS) * ((double)g_imu_rate_us / (1000000u));
+	data_buffer.imu_data_Groll += (data_buffer_raw.imu_data_gyroZ - GYROZ_BIAS) * ((double)g_imu_rate_us / (1000000u));
+	
+	data_buffer.imu_data_Apitch = atan2(data_buffer_raw.imu_data_accY, data_buffer_raw.imu_data_accZ) * 180 / 3.14;
+	data_buffer.imu_data_Ayaw = atan2(data_buffer_raw.imu_data_accX, data_buffer_raw.imu_data_accY) * 180 / 3.14;
+	data_buffer.imu_data_Aroll = atan2(data_buffer_raw.imu_data_accX, data_buffer_raw.imu_data_accZ) * 180 / 3.14;
+	
+	imu_data_ready_callback(data_buffer_raw, data_buffer);
 }
 
 void imu_rx_cplt_callback(void)
@@ -88,10 +99,12 @@ void imu_rx_cplt_callback(void)
 
 
 //INIT
-imu_error_t imu_begin(I2C_HandleTypeDef *imu_i2c, imu_gyro_range_t gyro_range, imu_acc_range_t acc_range)
+imu_error_t imu_begin(I2C_HandleTypeDef *imu_i2c, uint32_t rate_us, imu_gyro_range_t gyro_range, imu_acc_range_t acc_range)
 {
 	imu_i2c_p = imu_i2c;
 	uint8_t regval;
+	
+	g_imu_rate_us = rate_us;
 	
 	//Checks communication 
 	if(read_register(IMU_WHO_AM_I) != (IMU_SLAVE_ADD >> 1u))

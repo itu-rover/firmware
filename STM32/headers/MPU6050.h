@@ -37,6 +37,15 @@ typedef struct{
 	double imu_data_gyroY;
 	double imu_data_gyroZ;
 	double imu_data_temp;	
+}imu_data_raw_t;
+
+typedef struct{
+	double imu_data_Ayaw;
+	double imu_data_Apitch;
+	double imu_data_Aroll;
+	double imu_data_Gyaw;
+	double imu_data_Gpitch;
+	double imu_data_Groll;
 }imu_data_t;
 	
 //IMU system status
@@ -69,13 +78,13 @@ typedef enum{
 void imu_rx_cplt_callback(void);
 
 //this function have to be called before reading sensor data for waking
-imu_error_t imu_begin(I2C_HandleTypeDef *imu_i2c, imu_gyro_range_t gyro_range, imu_acc_range_t acc_range);
+imu_error_t imu_begin(I2C_HandleTypeDef *imu_i2c, uint32_t rate_us, imu_gyro_range_t gyro_range, imu_acc_range_t acc_range);
 
 //function starts reading data, for sensor values refer to address which will be declareted in callback as parameter
 imu_error_t imu_read_data(void);
 
 //callback function that indicates end of receiving  
-void imu_data_ready_callback(imu_data_t data);
+void imu_data_ready_callback(imu_data_raw_t data_raw, imu_data_t data);
 
 #ifdef __cplusplus
 }

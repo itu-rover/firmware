@@ -12,7 +12,7 @@ extern "C" {
 #endif
 	
 void tcp_rx_data_callback(void);
-void tcp_begin(UART_HandleTypeDef *tcp_uart, imu_data_t *imu_data);
+void tcp_begin(UART_HandleTypeDef *tcp_uart, imu_data_raw_t *imu_data);
 
 	
 

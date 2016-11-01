@@ -7,6 +7,14 @@
 #ifndef __ITU_ROVER_GPS
 #define __ITU_ROVER_GPS
 
+#include <CONFIG.h>
+
+#ifdef CONF_GPS 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stdint.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -286,6 +294,12 @@ void TM_GPS_DistanceBetween(TM_GPS_Distance_t* Distance_Data);
  *            - > NULL: Function succeded, pointer to @ref TM_GPS_Custom_t structure
  */
 TM_GPS_Custom_t * TM_GPS_AddCustom(TM_GPS_t* GPS_Data, char* GPG_Statement, uint8_t TermNumber);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif	//CONF_GPS
 
 #endif /* ITU_ROVER_GPS */
 
